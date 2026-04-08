@@ -1,0 +1,32 @@
+name: testgen_env
+description: Test Case Generator Environment using mutation testing
+
+entrypoint:
+  module: app
+  app: app
+
+tasks:
+  - id: easy
+    description: Basic correctness tests
+
+  - id: medium
+    description: Edge case detection
+
+  - id: hard
+    description: Mutation killing
+
+action_space:
+  type: object
+  properties:
+    test_code:
+      type: string
+
+observation_space:
+  type: object
+  properties:
+    function_code:
+      type: string
+    docstring:
+      type: string
+    task_level:
+      type: string

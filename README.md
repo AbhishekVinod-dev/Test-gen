@@ -7,7 +7,6 @@ pinned: false
 app_port: 8000
 tags:
   - openenv
-base_path: /web
 ---
 
 # TestGen

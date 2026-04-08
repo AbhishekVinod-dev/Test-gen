@@ -12,6 +12,7 @@ import subprocess
 import tempfile
 import os
 import logging
+import sys
 from mutations import generate_mutations
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ def run_pytest(test_code, func_code):
 
         try:
             result = subprocess.run(
-                ["pytest", test_file, "-v", "--tb=short"],
+                [sys.executable, "-m", "pytest", test_file, "-v", "--tb=short"],
                 capture_output=True,
                 timeout=5,
                 text=True

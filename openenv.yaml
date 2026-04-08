@@ -7,13 +7,13 @@ entrypoint:
 
 tasks:
   - id: easy
-    description: Basic correctness tests
+    description: Write tests for simple arithmetic or parity functions with clear expected outputs.
 
   - id: medium
-    description: Edge case detection
+    description: Write tests for list and string utilities, covering boundary cases and invariants.
 
   - id: hard
-    description: Mutation killing
+    description: Write tests for algorithmic functions such as searching and substring analysis.
 
 action_space:
   type: object

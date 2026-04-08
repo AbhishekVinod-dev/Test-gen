@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application
 COPY app.py env.py grader.py mutations.py inference.py ./
+COPY models.py ./
 COPY index.html landing.html game.html ./
 COPY server/ ./server/
 COPY fixtures/ ./fixtures/

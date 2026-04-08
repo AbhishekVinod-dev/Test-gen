@@ -8,34 +8,20 @@ Simulates a test generation task where:
 - Next function is loaded for next episode
 """
 
-from pydantic import BaseModel
+from pathlib import Path
 from typing import Optional
-from grader import evaluate_tests
+
 import json
-import random
 import logging
+import random
+
+from grader import evaluate_tests
+from models import Action, Observation, Reward, StepResult
 
 logger = logging.getLogger(__name__)
 
-
-class Observation(BaseModel):
-    """Observation: A function to write tests for"""
-    function_code: str
-    docstring: str
-    task_level: str
-
-
-class Action(BaseModel):
-    """Action: Test code submitted by agent"""
-    test_code: str
-
-
-class StepResult(BaseModel):
-    """Result of taking a step in the environment"""
-    observation: Observation  # Next function to test
-    reward: float            # Score (0-1): mutations killed / total mutations
-    done: bool               # Episode done (always True for single-step)
-    info: Optional[str] = None  # Error message if any
+BASE_DIR = Path(__file__).resolve().parent
+FIXTURES_PATH = BASE_DIR / "fixtures" / "functions.json"
 
 
 class TestGenEnv:
@@ -59,19 +45,35 @@ class TestGenEnv:
     
     def __init__(self):
         """Initialize environment by loading test functions database"""
-        with open("fixtures/functions.json") as f:
+        with open(FIXTURES_PATH, "r", encoding="utf-8") as f:
             self.data = json.load(f)
         self.current = None
+        self.current_task_level = None
         logger.info(f"TestGen environment initialized with {len(self.data)} functions")
+
+    def _choose_task(self, task_level: Optional[str] = None):
+        pool = self.data
+        if task_level is not None:
+            pool = [item for item in self.data if item.get("level") == task_level]
+            if not pool:
+                raise ValueError(f"Unknown task level: {task_level}")
+
+        if self.current is not None and len(pool) > 1:
+            filtered = [item for item in pool if item.get("code") != self.current.get("code")]
+            if filtered:
+                pool = filtered
+
+        return random.choice(pool)
     
-    def reset(self):
+    def reset(self, task_level: Optional[str] = None):
         """
         Reset environment and load a new random function.
         
         Returns:
             Observation: A function with docstring and difficulty level
         """
-        self.current = random.choice(self.data)
+        self.current_task_level = task_level
+        self.current = self._choose_task(task_level)
         logger.info(f"Environment reset - loaded {self.current['level']} difficulty function: {self.current['doc']}")
         
         return Observation(
@@ -95,8 +97,11 @@ class TestGenEnv:
         Returns:
             StepResult: Score, error info, and next observation
         """
+        if self.current is None:
+            self.reset()
+
         logger.info("Evaluating submitted tests...")
-        score, error = evaluate_tests(action.test_code, self.current)
+        score, error, killed_mutations, total_mutations = evaluate_tests(action.test_code, self.current)
         
         if error:
             logger.warning(f"Test evaluation error: {error}")
@@ -109,6 +114,12 @@ class TestGenEnv:
         return StepResult(
             observation=next_obs,
             reward=score,
+            reward_details=Reward(
+                score=score,
+                killed_mutations=killed_mutations,
+                total_mutations=total_mutations,
+                passed_original=error is None,
+            ),
             done=True,
             info=error
         )
@@ -121,4 +132,8 @@ class TestGenEnv:
             dict: Current function object or None if not initialized
         """
         return self.current
+
+    def close(self):
+        """Release any environment resources."""
+        return None
 

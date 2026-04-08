@@ -10,11 +10,14 @@ Routes:
 - GET /docs - Interactive API documentation (Swagger UI)
 """
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from env import TestGenEnv, Action
+from env import TestGenEnv
+from models import Action
 import os
 import logging
 import re
@@ -25,6 +28,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(
     title="🧪 TestGen API",
@@ -175,19 +179,19 @@ def test_{func_name}_smoke():
 @app.get("/")
 def root():
     """Serve the landing page"""
-    return FileResponse("landing.html", media_type="text/html")
+    return FileResponse(BASE_DIR / "landing.html", media_type="text/html")
 
 
 @app.get("/landing.html")
 def landing_page():
     """Serve the landing page explicitly"""
-    return FileResponse("landing.html", media_type="text/html")
+    return FileResponse(BASE_DIR / "landing.html", media_type="text/html")
 
 
 @app.get("/game.html")
 def game_page():
     """Serve the game page"""
-    return FileResponse("game.html", media_type="text/html")
+    return FileResponse(BASE_DIR / "game.html", media_type="text/html")
 
 
 @app.post("/reset")

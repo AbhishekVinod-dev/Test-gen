@@ -414,7 +414,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = '';
         let currentTask = null;
         let currentlyAIGenerated = false;
         let stats = {
@@ -427,6 +427,9 @@
         async function loadNewTask() {
             try {
                 const response = await fetch(`${API_BASE}/reset`, { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
                 currentTask = await response.json();
                 displayTask(currentTask);
                 clearResult();
@@ -460,6 +463,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ test_code: testCode })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
 
                 const result = await response.json();
 
@@ -502,7 +509,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('AI generation failed');
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
                 const data = await response.json();

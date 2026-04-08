@@ -1,0 +1,53 @@
+[
+  {
+    "code": "def add(a, b):\n    return a + b",
+    "doc": "sum two numbers",
+    "level": "easy"
+  },
+  {
+    "code": "def is_even(n):\n    return n % 2 == 0",
+    "doc": "check if number is even",
+    "level": "easy"
+  },
+  {
+    "code": "def max_in_list(lst):\n    return max(lst) if lst else None",
+    "doc": "find maximum in list",
+    "level": "medium"
+  },
+  {
+    "code": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)",
+    "doc": "compute factorial recursively",
+    "level": "medium"
+  },
+  {
+    "code": "def is_palindrome(s):\n    s = s.lower().replace(' ', '')\n    return s == s[::-1]",
+    "doc": "check if string is palindrome",
+    "level": "medium"
+  },
+  {
+    "code": "def merge_sorted(arr1, arr2):\n    result = []\n    i = j = 0\n    while i < len(arr1) and j < len(arr2):\n        if arr1[i] <= arr2[j]:\n            result.append(arr1[i])\n            i += 1\n        else:\n            result.append(arr2[j])\n            j += 1\n    return result + arr1[i:] + arr2[j:]",
+    "doc": "merge two sorted arrays",
+    "level": "hard"
+  },
+  {
+    "code": "def longest_substring(s):\n    char_index = {}\n    max_len = 0\n    start = 0\n    for i, char in enumerate(s):\n        if char in char_index:\n            start = max(start, char_index[char] + 1)\n        char_index[char] = i\n        max_len = max(max_len, i - start + 1)\n    return max_len",
+    "doc": "find longest substring without repeating characters",
+    "level": "hard"
+  },
+  {
+    "code": "def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
+    "doc": "binary search in sorted array",
+    "level": "hard"
+  },
+  {
+    "code": "def fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a",
+    "doc": "compute nth fibonacci number",
+    "level": "medium"
+  },
+  {
+    "code": "def is_prime(n):\n    if n < 2:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    for i in range(3, int(n**0.5) + 1, 2):\n        if n % i == 0:\n            return False\n    return True",
+    "doc": "check if number is prime",
+    "level": "hard"
+  }
+]
+

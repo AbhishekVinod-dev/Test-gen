@@ -44,7 +44,7 @@ Action:
 
 Reward:
 
-- `score`: mutation kill rate in `[0.0, 1.0]`.
+- `score`: mutation kill rate in `(0, 1)`.
 - `killed_mutations`: number of mutants the tests fail on.
 - `total_mutations`: total generated mutants evaluated.
 
@@ -70,9 +70,9 @@ The grader also rejects tests that fail on the original implementation and times
 
 Measured with the included inference runner:
 
-- Easy: `1.00`
-- Medium: `1.00`
-- Hard: `1.00`
+- Easy: `0.99`
+- Medium: `0.99`
+- Hard: `0.99`
 
 The baseline script uses the OpenAI client when `HF_TOKEN` or `OPENAI_API_KEY` is available, and falls back to the deterministic rule-based generator when offline.
 

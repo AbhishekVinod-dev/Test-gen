@@ -420,8 +420,8 @@
         let stats = {
             totalTests: 0,
             scores: [],
-            bestScore: 0,
-            avgScore: 0
+            bestScore: null,
+            avgScore: null
         };
 
         async function loadNewTask() {
@@ -472,7 +472,7 @@
 
                 stats.totalTests++;
                 stats.scores.push(result.reward);
-                stats.bestScore = Math.max(stats.bestScore, result.reward);
+                stats.bestScore = stats.bestScore === null ? result.reward : Math.max(stats.bestScore, result.reward);
                 stats.avgScore = stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length;
 
                 updateStats();
@@ -534,7 +534,7 @@
             if (result.info) {
                 resultDiv.classList.add('error');
                 document.getElementById('resultStatus').textContent = '❌ Test Failed';
-                document.getElementById('resultScore').textContent = '0%';
+                document.getElementById('resultScore').textContent = '-';
                 document.getElementById('resultDetail').textContent = result.info;
             } else {
                 resultDiv.classList.add('success');
@@ -592,8 +592,8 @@
 
         function updateStats() {
             document.getElementById('totalTests').textContent = stats.totalTests;
-            document.getElementById('avgScore').textContent = (stats.avgScore * 100).toFixed(1) + '%';
-            document.getElementById('bestScore').textContent = (stats.bestScore * 100).toFixed(1) + '%';
+            document.getElementById('avgScore').textContent = stats.avgScore === null ? '-' : (stats.avgScore * 100).toFixed(1) + '%';
+            document.getElementById('bestScore').textContent = stats.bestScore === null ? '-' : (stats.bestScore * 100).toFixed(1) + '%';
         }
 
         window.addEventListener('load', () => {

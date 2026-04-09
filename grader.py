@@ -18,7 +18,7 @@ from mutations import generate_mutations
 logger = logging.getLogger(__name__)
 
 # Scores must be strictly within (0, 1) for task validation.
-EPSILON_SCORE = 1e-6
+EPSILON_SCORE = 0.01
 
 
 def _clamp_open_interval(value: float, *, eps: float = EPSILON_SCORE) -> float:

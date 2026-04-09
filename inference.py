@@ -21,7 +21,7 @@ TEMPERATURE = 0.0
 MAX_TOKENS = 900
 SUCCESS_SCORE_THRESHOLD = 0.10
 TASK_LEVELS = ("easy", "medium", "hard")
-EPSILON_SCORE = 1e-6
+EPSILON_SCORE = 0.01
 
 
 def clamp_open_interval(value: float, *, eps: float = EPSILON_SCORE) -> float:

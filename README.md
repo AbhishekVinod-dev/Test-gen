@@ -94,6 +94,17 @@ uvicorn app:app --host 0.0.0.0 --port 8000
 openenv validate
 ```
 
+## Deploy To Hugging Face Spaces
+
+This repository is already configured for a Docker-based Hugging Face Space.
+
+1. Create a new Space on Hugging Face and choose `Docker` as the SDK.
+2. Upload or push the repository contents, including `Dockerfile` and this `README.md`.
+3. Set the Space to use port `8000`.
+4. Add any needed secrets such as `HF_TOKEN` or `OPENAI_API_KEY` in the Space settings.
+
+If you want to publish from git, use the Hugging Face repo URL as your remote and push the current branch to it.
+
 ## Baseline Inference
 
 ```bash

@@ -17,6 +17,13 @@ from mutations import generate_mutations
 
 logger = logging.getLogger(__name__)
 
+# Scores must be strictly within (0, 1) for task validation.
+EPSILON_SCORE = 1e-6
+
+
+def _clamp_open_interval(value: float, *, eps: float = EPSILON_SCORE) -> float:
+    return min(max(float(value), eps), 1.0 - eps)
+
 
 def run_pytest(test_code, func_code):
     """
@@ -79,14 +86,14 @@ def evaluate_tests(test_code, func_obj):
         if not passed:
             error_msg = f"Tests fail on correct implementation:\n{stderr}"
             logger.warning(f"Test validation failed: {error_msg}")
-            return 0.0, error_msg, 0, 0
+            return _clamp_open_interval(0.0), error_msg, 0, 0
         
         # Step 2: Generate mutations
         mutations = generate_mutations(func_obj["code"])
         
         if not mutations:
             logger.warning("No mutations generated for code")
-            return 0.0, "Could not generate mutations", 0, 0
+            return _clamp_open_interval(0.0), "Could not generate mutations", 0, 0
         
         # Step 3: Run tests against mutations
         killed = 0
@@ -96,7 +103,7 @@ def evaluate_tests(test_code, func_obj):
                 killed += 1
         
         # Step 4: Calculate score
-        score = killed / len(mutations)
+        score = _clamp_open_interval(killed / len(mutations))
         logger.info(f"Test evaluation complete: {killed}/{len(mutations)} mutations killed (score={score:.2f})")
 
         return score, None, killed, len(mutations)
@@ -104,5 +111,5 @@ def evaluate_tests(test_code, func_obj):
     except Exception as e:
         error_msg = f"Grader error: {str(e)}"
         logger.error(error_msg)
-        return 0.0, error_msg, 0, 0
+        return _clamp_open_interval(0.0), error_msg, 0, 0
 

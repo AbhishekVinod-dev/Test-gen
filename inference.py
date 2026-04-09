@@ -21,6 +21,11 @@ TEMPERATURE = 0.0
 MAX_TOKENS = 900
 SUCCESS_SCORE_THRESHOLD = 0.10
 TASK_LEVELS = ("easy", "medium", "hard")
+EPSILON_SCORE = 1e-6
+
+
+def clamp_open_interval(value: float, *, eps: float = EPSILON_SCORE) -> float:
+    return min(max(float(value), eps), 1.0 - eps)
 
 
 def log_start(task: str, env: str, model: str) -> None:
@@ -124,9 +129,9 @@ def run_episode(env: TestGenEnv, client: Optional[OpenAI], task_level: str) -> t
         )
 
         result = env.step(Action(test_code=test_code))
-        reward = float(result.reward or 0.0)
+        reward = clamp_open_interval(result.reward or 0.0)
         rewards.append(reward)
-        score = min(max(reward, 0.0), 1.0)
+        score = clamp_open_interval(reward)
         success = score >= SUCCESS_SCORE_THRESHOLD and result.info is None
 
         history.append(f"task={task_level} reward={reward:.2f}")

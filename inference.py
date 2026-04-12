@@ -6,15 +6,16 @@ import os
 import textwrap
 from typing import Optional
 
-from huggingface_hub import InferenceClient
+from openai import OpenAI
 
 from app import generate_rule_based_tests
 from env import Action, TestGenEnv
 
-MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+MODEL_NAME = os.getenv("MODEL_NAME", os.getenv("LLM_MODEL", "openai/gpt-4o-mini"))
 TASK_NAME = os.getenv("MY_ENV_V4_TASK", "testgen")
 BENCHMARK = os.getenv("MY_ENV_V4_BENCHMARK", "testgen_env")
-HF_TOKEN = os.getenv("HF_TOKEN")
+API_BASE_URL = os.getenv("API_BASE_URL")
+API_KEY = os.getenv("API_KEY")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME") or os.getenv("IMAGE_NAME")
 TEMPERATURE = 0.0
 MAX_TOKENS = 900
@@ -70,7 +71,7 @@ def build_prompt(task_level: str, function_code: str, docstring: str, history: l
 
 
 def generate_tests(
-    client: Optional[InferenceClient],
+    client: Optional[OpenAI],
     task_level: str,
     function_code: str,
     docstring: str,
@@ -109,7 +110,7 @@ def summarize_action(test_code: str) -> str:
     return "generated_tests"
 
 
-def run_episode(env: TestGenEnv, client: Optional[InferenceClient], task_level: str) -> tuple[float, bool, list[float]]:
+def run_episode(env: TestGenEnv, client: Optional[OpenAI], task_level: str) -> tuple[float, bool, list[float]]:
     history: list[str] = []
     rewards: list[float] = []
     score = 0.0
@@ -144,7 +145,7 @@ def run_episode(env: TestGenEnv, client: Optional[InferenceClient], task_level: 
 
 
 def main() -> None:
-    client = InferenceClient(api_key=HF_TOKEN) if HF_TOKEN else None
+    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY) if API_BASE_URL and API_KEY else None
     env = TestGenEnv()
 
     for task_level in TASK_LEVELS:

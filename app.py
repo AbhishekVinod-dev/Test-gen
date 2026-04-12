@@ -331,7 +331,7 @@ def step(action: Action):
 @app.post("/generate-tests")
 def generate_tests(request: TestGenerationRequest):
     """
-    Generate test cases using Hugging Face Inference API.
+    Generate test cases through a LiteLLM-compatible OpenAI endpoint.
     
     Args:
         request: TestGenerationRequest with function_code and docstring
@@ -342,15 +342,16 @@ def generate_tests(request: TestGenerationRequest):
     logger.info(f"API call: /generate-tests for function: {request.docstring}")
     
     try:
-        from huggingface_hub import InferenceClient
+        from openai import OpenAI
 
-        api_key = os.getenv("HF_TOKEN")
+        api_base_url = os.getenv("API_BASE_URL")
+        api_key = os.getenv("API_KEY")
 
-        if not api_key:
-            logger.warning("No HF_TOKEN configured; using rule-based test generation")
+        if not api_base_url or not api_key:
+            logger.warning("API_BASE_URL/API_KEY not configured; using rule-based test generation")
             return TestGenerationResponse(test_code=generate_rule_based_tests(request.function_code))
 
-        client = InferenceClient(api_key=api_key)
+        client = OpenAI(base_url=api_base_url, api_key=api_key)
         
         variation_seed = uuid.uuid4().hex[:10]
         prompt = f"""Generate comprehensive pytest test cases for this function:
@@ -373,7 +374,7 @@ Requirements:
 Return ONLY the test code, no explanations or markdown.
 Start directly with 'def test_'"""
 
-        model = os.getenv("LLM_MODEL", "Qwen/Qwen2.5-72B-Instruct")
+        model = os.getenv("LLM_MODEL", "openai/gpt-4o-mini")
         response = client.chat.completions.create(
             model=model,
             messages=[

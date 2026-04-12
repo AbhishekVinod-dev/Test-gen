@@ -2,4 +2,4 @@ fastapi
 uvicorn
 pytest
 pydantic
-huggingface_hub
+openai

@@ -282,8 +282,8 @@ def test_{func_name}_smoke():
 
 @app.get("/")
 def root():
-    """Serve the landing page"""
-    return FileResponse(BASE_DIR / "landing.html", media_type="text/html")
+    """Serve the default home page"""
+    return FileResponse(BASE_DIR / "index.html", media_type="text/html")
 
 
 @app.get("/landing.html")

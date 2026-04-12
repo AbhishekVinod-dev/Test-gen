@@ -13,6 +13,8 @@ import tempfile
 import os
 import logging
 import sys
+import pytest
+import threading
 from mutations import generate_mutations
 
 logger = logging.getLogger(__name__)
@@ -27,37 +29,61 @@ def _clamp_open_interval(value: float, *, eps: float = EPSILON_SCORE) -> float:
 
 def run_pytest(test_code, func_code):
     """
-    Execute pytest for given test and function code.
+    Execute test code directly without subprocess.
     
     Args:
         test_code: Test source code
         func_code: Function source code to test
         
     Returns:
-        bool: True if all tests pass, False otherwise
+        tuple: (bool, stdout, stderr) - True if tests pass, False otherwise
     """
-    with tempfile.TemporaryDirectory() as tmp:
-        func_file = os.path.join(tmp, "func.py")
-        test_file = os.path.join(tmp, "test_func.py")
+    import traceback
+    import io
+    import sys
+    from contextlib import redirect_stdout, redirect_stderr
+    
+    # Combine code
+    combined_code = f"{func_code}\n{test_code}"
+    
+    # Create a namespace for execution
+    namespace = {}
+    stdout_capture = io.StringIO()
+    stderr_capture = io.StringIO()
+    
+    try:
+        # Execute the combined code
+        with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
+            exec(combined_code, namespace)
+        
+        # Now run test functions
+        failures = []
+        for name, obj in namespace.items():
+            if name.startswith('test_') and callable(obj):
+                try:
+                    obj()
+                except AssertionError as e:
+                    failures.append(str(e) or f"Test {name} failed")
+                except Exception as e:
+                    failures.append(f"Test {name} errored: {e}")
+        
+        if failures:
+            return False, "", "\n".join(failures)
+        
+        # If no test functions found, that's an error
+        test_funcs = [name for name in namespace.keys() if name.startswith('test_')]
+        if not test_funcs:
+            return False, "", "No test functions found (must start with 'test_')"
+        
+        return True, stdout_capture.getvalue(), stderr_capture.getvalue()
+        
+    except SyntaxError as e:
+        return False, "", f"Syntax error in test code: {e}"
+    except Exception as e:
+        return False, "", f"Error executing tests: {e}\n{traceback.format_exc()}"
 
-        with open(func_file, "w") as f:
-            f.write(func_code)
 
-        with open(test_file, "w") as f:
-            f.write(f"from func import *\n{test_code}")
 
-        try:
-            result = subprocess.run(
-                [sys.executable, "-m", "pytest", test_file, "-v", "--tb=short"],
-                capture_output=True,
-                timeout=5,
-                text=True
-            )
-            return result.returncode == 0, result.stdout, result.stderr
-        except subprocess.TimeoutExpired:
-            return False, "", "Test execution timed out (>5 seconds)"
-        except Exception as e:
-            return False, "", str(e)
 
 
 def evaluate_tests(test_code, func_obj):

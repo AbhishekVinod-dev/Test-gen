@@ -74,7 +74,7 @@ Measured with the included inference runner:
 - Medium: `0.99`
 - Hard: `0.99`
 
-The baseline script uses the OpenAI client when `HF_TOKEN` or `OPENAI_API_KEY` is available, and falls back to the deterministic rule-based generator when offline.
+The baseline script uses the Hugging Face client when `HF_TOKEN` is available, and falls back to the deterministic rule-based generator when offline.
 
 ## Setup
 
@@ -100,8 +100,8 @@ This repository is already configured for a Docker-based Hugging Face Space.
 
 1. Create a new Space on Hugging Face and choose `Docker` as the SDK.
 2. Upload or push the repository contents, including `Dockerfile` and this `README.md`.
-3. Set the Space to use port `8000`.
-4. Add any needed secrets such as `HF_TOKEN` or `OPENAI_API_KEY` in the Space settings.
+3. Keep `app_port: 8000` in the README front matter and let the container read `${PORT}` at runtime.
+4. Add needed secrets such as `HF_TOKEN` in the Space settings.
 
 If you want to publish from git, use the Hugging Face repo URL as your remote and push the current branch to it.
 

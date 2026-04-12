@@ -12,7 +12,7 @@ dependencies = [
 	"uvicorn",
 	"pytest",
 	"pydantic",
-	"openai",
+	"huggingface_hub",
 	"openenv-core>=0.2.0",
 ]
 

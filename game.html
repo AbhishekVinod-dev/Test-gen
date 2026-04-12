@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TestGen - Play</title>
+    <title>TestGen - Challenge</title>
     <style>
         * {
             margin: 0;
@@ -12,341 +12,395 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f2b33;
+            color: #4db8a8;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(600px at 30% 50%, rgba(77, 184, 168, 0.08) 0%, transparent 80%),
+                radial-gradient(500px at 70% 30%, rgba(91, 164, 184, 0.1) 0%, transparent 75%),
+                radial-gradient(450px at 50% 70%, rgba(77, 184, 168, 0.06) 0%, transparent 70%);
+            animation: blobWave 12s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(550px at 20% 70%, rgba(91, 164, 184, 0.07) 0%, transparent 75%),
+                radial-gradient(480px at 80% 50%, rgba(77, 184, 168, 0.09) 0%, transparent 70%),
+                radial-gradient(520px at 60% 20%, rgba(91, 164, 184, 0.08) 0%, transparent 75%);
+            animation: blobFlow 14s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes blobWave {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-20px, -30px) scale(1.05); }
+            50% { transform: translate(10px, -20px) scale(0.98); }
+            75% { transform: translate(-10px, 25px) scale(1.02); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        @keyframes blobFlow {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, 20px) scale(0.98); }
+            50% { transform: translate(-15px, 30px) scale(1.03); }
+            75% { transform: translate(20px, -25px) scale(1.01); }
+            100% { transform: translate(0, 0) scale(1); }
         }
 
         header {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem;
-            text-align: center;
-            border-bottom: 3px solid #667eea;
+            display: none;
+        }
+
+        nav { display: none; }
+
+        .floating-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #0a1a1f;
+            border-right: 2px solid #4db8a8;
+            padding: 2rem 1rem;
+            z-index: 100;
+            overflow-y: auto;
+            box-shadow: 2px 0 15px rgba(77, 184, 168, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #4db8a8;
             margin-bottom: 2rem;
-            border-radius: 10px;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #1a4d54;
         }
 
-        header h1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2em;
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        header a {
-            color: #667eea;
+        .sidebar-nav a {
+            display: block;
+            color: #5ba4b8;
             text-decoration: none;
-            margin-left: 2rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 0.95em;
             font-weight: 500;
         }
 
-        header a:hover {
-            text-decoration: underline;
+        .sidebar-nav a:hover {
+            background: rgba(77, 184, 168, 0.12);
+            color: #4db8a8;
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(77, 184, 168, 0.15);
+            color: #4db8a8;
+            border-left: 3px solid #4db8a8;
+            padding-left: calc(1.2rem - 3px);
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 1200px;
-            width: 100%;
-            padding: 40px;
-            overflow-y: auto;
-            max-height: 90vh;
+            max-width: 100%;
+            margin: 0;
+            margin-left: 280px;
+            padding: 2rem;
+            flex: 1;
+            width: calc(100% - 280px);
+            position: relative;
+            z-index: 1;
         }
 
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
+            background: rgba(5, 20, 25, 0.6);
+            border: 2px solid #1a4d5c;
+            padding: 1.5rem;
+            border-radius: 8px;
             text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.1);
         }
 
         .stat-card .value {
-            font-size: 2em;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 1.8em;
+            font-weight: 800;
+            color: #4db8a8;
+            margin-bottom: 0.5rem;
         }
 
         .stat-card .label {
             font-size: 0.9em;
-            opacity: 0.9;
+            color: #8fa4aa;
         }
 
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
 
         .panel {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            border: 2px solid #e9ecef;
+            background: rgba(5, 20, 25, 0.6);
+            border: 2px solid #1a4d5c;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.1);
         }
 
         .panel h2 {
-            color: #333;
-            margin-bottom: 15px;
+            color: #4db8a8;
+            margin-bottom: 1.5rem;
             font-size: 1.3em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-weight: 700;
         }
 
-        .panel h2::before {
-            content: '';
-            display: inline-block;
-            width: 5px;
-            height: 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 3px;
-        }
 
         .code-block {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #00ffcc;
+            padding: 1rem;
+            border-radius: 8px;
             overflow-x: auto;
             font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            line-height: 1.5;
-            margin-bottom: 15px;
+            font-size: 0.85em;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            border: 1px solid #1a4d5c;
         }
 
         .task-info {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
+            background: rgba(0, 255, 204, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid #00ffcc;
         }
 
         .task-info .docstring {
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 5px;
+            color: #4db8a8;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
-        .task-info .level {
+        .level {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
             font-size: 0.85em;
-            font-weight: bold;
-            margin-top: 8px;
-        }
-
-        .level.easy {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .level.medium {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .level.hard {
-            background: #f8d7da;
-            color: #721c24;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            background: rgba(77, 184, 168, 0.15);
+            color: #4db8a8;
         }
 
         textarea {
             width: 100%;
             height: 250px;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
+            padding: 1rem;
+            border: 2px solid #1a4d5c;
+            border-radius: 8px;
             font-family: 'Courier New', monospace;
             font-size: 0.9em;
             resize: vertical;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            background: rgba(0, 0, 0, 0.3);
+            color: #00ffcc;
         }
 
         textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4db8a8;
+            box-shadow: 0 0 10px rgba(77, 184, 168, 0.15);
         }
 
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 1rem;
+            margin-top: 1.5rem;
             flex-wrap: wrap;
         }
 
-        button {
+        .btn {
             flex: 1;
             min-width: 120px;
-            padding: 12px 24px;
+            padding: 0.9rem 1.5rem;
             border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 0.5rem;
+            font-size: 1em;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #4db8a8;
+            color: #0a1a1f;
+            box-shadow: 0 2px 10px rgba(77, 184, 168, 0.2);
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            background: #3fa89a;
+            box-shadow: 0 4px 15px rgba(77, 184, 168, 0.3);
         }
 
         .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: transparent;
+            color: #4db8a8;
+            border: 2px solid #4db8a8;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(77, 184, 168, 0.1);
+            box-shadow: 0 2px 10px rgba(77, 184, 168, 0.2);
         }
 
         .btn-ai {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            flex: 1;
+            background: #5ba4b8;
+            color: #0a1a1f;
+            box-shadow: 0 2px 10px rgba(91, 164, 184, 0.2);
+            font-weight: 700;
+        }
+
+        .btn-ai:hover {
+            background: #4a94a8;
+            box-shadow: 0 4px 15px rgba(91, 164, 184, 0.3);
         }
 
         .result {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
+            background: rgba(0, 255, 204, 0.05);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            border-left: 3px solid #00ffcc;
+            border: 2px solid #1a4d5c;
         }
 
         .result.success {
-            border-left-color: #28a745;
+            background: rgba(0, 255, 204, 0.1);
+            border-left-color: #00ffcc;
+            border-color: #00ffcc;
         }
 
         .result.error {
-            border-left-color: #dc3545;
-        }
-
-        .result.waiting {
-            border-left-color: #ffc107;
-        }
-
-        .result-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            background: rgba(255, 80, 80, 0.1);
+            border-left-color: #ff5050;
+            border-color: #ff5050;
         }
 
         .result-status {
-            font-weight: bold;
+            font-weight: 700;
             font-size: 1.1em;
+            color: #00ffcc;
         }
 
         .result-detail {
             font-family: 'Courier New', monospace;
             font-size: 0.9em;
-            color: #666;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
+            color: #7a9ca5;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 6px;
             white-space: pre-wrap;
             word-wrap: break-word;
+            margin-top: 1rem;
+            border: 1px solid #1a4d5c;
         }
 
         .score-display {
             font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
+            font-weight: 800;
+            color: #00ffcc;
+            margin: 1rem 0;
         }
 
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: #e9ecef;
-            border-radius: 10px;
+            background: rgba(0, 255, 204, 0.2);
+            border-radius: 4px;
             overflow: hidden;
-            margin-top: 10px;
+            margin-top: 1rem;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: #00ffcc;
             width: 0%;
             transition: width 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
         }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1a4d5c; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ffcc; }
 
         @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-
-            header h1 {
-                font-size: 1.5em;
-            }
-
-            .container {
-                padding: 20px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            button {
-                flex: unset;
-                width: 100%;
-            }
+            .main-content { grid-template-columns: 1fr; }
+            .button-group { flex-direction: column; }
+            .btn { width: 100%; }
         }
 
-        .hidden {
-            display: none;
-        }
-
-        .ai-indicator {
-            display: inline-block;
-            padding: 4px 8px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-radius: 5px;
-            font-size: 0.8em;
-            margin-left: 5px;
-        }
-
-        .footer-note {
-            text-align: center;
-            color: #999;
-            font-size: 0.9em;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #e9ecef;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+    <div class="floating-sidebar">
+        <div class="sidebar-logo">TestGen</div>
+        <nav class="sidebar-nav">
+            <a href="/">Home</a>
+            <a href="game.html" class="active">Play Challenge</a>
+        </nav>
+    </div>
+
     <header>
-        <div>
-            <h1>🧪 TestGen - Challenge Mode</h1>
-            <a href="index.html">← Back to Home</a>
-        </div>
+        <div class="logo">TestGen</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="game.html">Play Challenge</a>
+        </nav>
     </header>
 
     <div class="container">
@@ -357,7 +411,7 @@
             </div>
             <div class="stat-card">
                 <div class="value" id="avgScore">0%</div>
-                <div class="label">Avg Score</div>
+                <div class="label">Average Score</div>
             </div>
             <div class="stat-card">
                 <div class="value" id="bestScore">0%</div>
@@ -371,80 +425,62 @@
 
         <div class="main-content">
             <div class="panel">
-                <h2>📝 Function to Test</h2>
+                <h2>Function to Test</h2>
                 <div class="task-info">
                     <div class="docstring" id="docstring">-</div>
                     <div class="code-block" id="functionCode">// Loading...</div>
                     <span class="level" id="level">-</span>
                 </div>
-                <button class="btn-secondary" onclick="loadNewTask()">Load New Task</button>
+                <button class="btn btn-secondary" onclick="loadNewTask()">Load New Task</button>
             </div>
 
             <div class="panel">
-                <h2>✍️ Write Test Cases <span class="ai-indicator" id="aiIndicator" style="display: none;">AI Generated</span></h2>
-                <textarea id="testCode" placeholder="Write your test code here...\ndef test_add_positive():\n    assert add(2, 3) == 5\n\ndef test_add_zero():\n    assert add(0, 0) == 0\n\ndef test_add_negative():\n    assert add(-1, -1) == -2"></textarea>
+                <h2>Write Your Tests</h2>
+                <textarea id="testCode" placeholder="Write your test code here...&#10;&#10;def test_example():&#10;    assert function(input) == expected"></textarea>
                 <div class="button-group">
-                    <button class="btn-primary" onclick="submitTests()">📊 Submit Tests</button>
-                    <button class="btn-ai" onclick="generateTestsWithAI()">🤖 Generate with AI</button>
-                    <button class="btn-secondary" onclick="clearTests()">Clear</button>
+                    <button class="btn btn-primary" onclick="submitTests()">Submit Tests</button>
+                    <button class="btn btn-ai" onclick="generateTestsWithAI()">Generate with AI</button>
+                    <button class="btn btn-secondary" onclick="clearTests()">Clear</button>
                 </div>
             </div>
         </div>
 
         <div class="panel">
-            <h2>📊 Results</h2>
+            <h2>Results</h2>
             <div id="result" class="result hidden">
-                <div class="result-header">
-                    <span id="resultStatus" class="result-status">-</span>
-                </div>
+                <div class="result-status" id="resultStatus">-</div>
                 <div class="score-display" id="resultScore">-</div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
                 <div class="result-detail" id="resultDetail">-</div>
             </div>
-            <div id="noResult" style="text-align: center; color: #999; padding: 20px;">
-                📤 Submit tests or generate with AI to see results
+            <div id="noResult" style="text-align: center; color: #8b949e; padding: 2rem;">
+                Submit tests or generate with AI to see results
             </div>
-        </div>
-
-        <div class="footer-note">
-            <p>⚡ Write comprehensive test cases to catch mutations | 🎯 Score based on mutation kills | 🏆 Improve your average</p>
         </div>
     </div>
 
     <script>
         const API_BASE = '';
         let currentTask = null;
-        let currentlyAIGenerated = false;
-        let stats = {
-            totalTests: 0,
-            scores: [],
-            bestScore: null,
-            avgScore: null
-        };
+        let stats = { totalTests: 0, scores: [], bestScore: null, avgScore: null };
 
         async function loadNewTask() {
             try {
                 const response = await fetch(`${API_BASE}/reset`, { method: 'POST' });
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
                 currentTask = await response.json();
                 displayTask(currentTask);
                 clearResult();
-                currentlyAIGenerated = false;
-                document.getElementById('aiIndicator').style.display = 'none';
             } catch (error) {
                 showError('Failed to load task: ' + error.message);
             }
         }
 
         function displayTask(task) {
-            document.getElementById('docstring').textContent = task.docstring || 'Function Docstring';
+            document.getElementById('docstring').textContent = task.docstring || 'Function';
             document.getElementById('functionCode').textContent = task.function_code;
             document.getElementById('level').textContent = (task.task_level || 'unknown').toUpperCase();
-            document.getElementById('level').className = `level ${task.task_level || 'easy'}`;
             document.getElementById('currentDifficulty').textContent = (task.task_level || 'unknown').toUpperCase();
         }
 
@@ -454,72 +490,40 @@
                 showError('Please write some test code');
                 return;
             }
-
-            showWaiting('⏳ Evaluating your tests...');
-
+            showWaiting('Evaluating your tests...');
             try {
                 const response = await fetch(`${API_BASE}/step`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ test_code: testCode })
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
                 const result = await response.json();
-
                 stats.totalTests++;
                 stats.scores.push(result.reward);
                 stats.bestScore = stats.bestScore === null ? result.reward : Math.max(stats.bestScore, result.reward);
                 stats.avgScore = stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length;
-
                 updateStats();
                 displayResult(result);
-
-                if (result.observation) {
-                    currentTask = result.observation;
-                    displayTask(currentTask);
-                    document.getElementById('testCode').value = '';
-                    currentlyAIGenerated = false;
-                    document.getElementById('aiIndicator').style.display = 'none';
-                }
             } catch (error) {
-                showError('❌ Error evaluating tests: ' + error.message);
+                showError('Error evaluating tests: ' + error.message);
             }
         }
 
         async function generateTestsWithAI() {
-            if (!currentTask) {
-                showError('Please load a task first');
-                return;
-            }
-
-            showWaiting('🤖 AI is generating tests...');
-
+            if (!currentTask) { showError('Please load a task first'); return; }
+            showWaiting('Generating tests with AI...');
             try {
                 const response = await fetch(`${API_BASE}/generate-tests`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        function_code: currentTask.function_code,
-                        docstring: currentTask.docstring
-                    })
+                    body: JSON.stringify({ function_code: currentTask.function_code, docstring: currentTask.docstring })
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
                 const data = await response.json();
                 document.getElementById('testCode').value = data.test_code;
-                currentlyAIGenerated = true;
-                document.getElementById('aiIndicator').style.display = 'inline-block';
                 clearResult();
-                showWaiting('✨ Tests generated! Click Submit to evaluate.');
+                showWaiting('Tests generated. You can now submit them for evaluation.');
             } catch (error) {
-                showError('❌ AI generation error: ' + error.message);
+                showError('Error generating tests: ' + error.message);
             }
         }
 
@@ -527,36 +531,26 @@
             const resultDiv = document.getElementById('result');
             const noResult = document.getElementById('noResult');
             const score = (result.reward * 100).toFixed(1);
-
-            resultDiv.classList.remove('hidden', 'success', 'error', 'waiting');
+            resultDiv.classList.remove('hidden');
             noResult.classList.add('hidden');
-
             if (result.info) {
                 resultDiv.classList.add('error');
-                document.getElementById('resultStatus').textContent = '❌ Test Failed';
+                document.getElementById('resultStatus').textContent = 'Test Failed';
                 document.getElementById('resultScore').textContent = '-';
                 document.getElementById('resultDetail').textContent = result.info;
             } else {
                 resultDiv.classList.add('success');
-                const badge = currentlyAIGenerated ? ' (🤖 AI-Generated)' : '';
-                document.getElementById('resultStatus').textContent = '✅ Tests Passed - Mutation Score' + badge;
+                document.getElementById('resultStatus').textContent = 'Tests Passed - Mutation Score';
                 document.getElementById('resultScore').textContent = score + '%';
-                document.getElementById('resultDetail').textContent = 
-                    `Your tests caught ${score}% of mutations!\n\nExplanation:\nYour tests were run against the original code and passed.\nThen, mutations (variations) were applied to the code, and your tests failed on ${score}% of them.\n\nHigher score = better tests!`;
+                document.getElementById('resultDetail').textContent = `Your tests caught ${score}% of mutations!`;
             }
-
             document.getElementById('progressFill').style.width = score + '%';
-            resultDiv.classList.remove('hidden');
         }
 
         function showWaiting(message) {
             const resultDiv = document.getElementById('result');
-            const noResult = document.getElementById('noResult');
-
             resultDiv.classList.remove('hidden', 'success', 'error');
-            resultDiv.classList.add('waiting');
-            noResult.classList.add('hidden');
-
+            document.getElementById('noResult').classList.add('hidden');
             document.getElementById('resultStatus').textContent = message;
             document.getElementById('resultScore').textContent = '-';
             document.getElementById('progressFill').style.width = '0%';
@@ -565,12 +559,9 @@
 
         function showError(message) {
             const resultDiv = document.getElementById('result');
-            const noResult = document.getElementById('noResult');
-
-            resultDiv.classList.remove('hidden', 'success', 'waiting');
+            resultDiv.classList.remove('hidden', 'success');
             resultDiv.classList.add('error');
-            noResult.classList.add('hidden');
-
+            document.getElementById('noResult').classList.add('hidden');
             document.getElementById('resultStatus').textContent = message.split('\n')[0];
             document.getElementById('resultScore').textContent = '-';
             document.getElementById('progressFill').style.width = '0%';
@@ -580,14 +571,11 @@
         function clearResult() {
             document.getElementById('result').classList.add('hidden');
             document.getElementById('noResult').classList.remove('hidden');
-            document.getElementById('progressFill').style.width = '0%';
         }
 
         function clearTests() {
             document.getElementById('testCode').value = '';
             clearResult();
-            currentlyAIGenerated = false;
-            document.getElementById('aiIndicator').style.display = 'none';
         }
 
         function updateStats() {
@@ -596,9 +584,7 @@
             document.getElementById('bestScore').textContent = stats.bestScore === null ? '-' : (stats.bestScore * 100).toFixed(1) + '%';
         }
 
-        window.addEventListener('load', () => {
-            loadNewTask();
-        });
+        window.addEventListener('load', () => { loadNewTask(); });
     </script>
 </body>
 </html>

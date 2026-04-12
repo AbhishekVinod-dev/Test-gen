@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <title>TestGen - AI-Powered Testing Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00d9a3;
+            --secondary: #00a8cc;
+            --dark-bg: #0a1428;
+            --card-bg: #0f1d31;
+            --text-light: #e0e0e0;
+            --text-muted: #888;
+            --accent: #00ffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1428 0%, #0f1d31 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(0, 217, 163, 0.2);
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .sidebar-logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 1rem; }
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95em;
+        }
+        .nav-item:hover { background: rgba(0, 217, 163, 0.1); border-left-color: var(--primary); }
+        .nav-item.active { background: rgba(0, 217, 163, 0.15);  border-left-color: var(--primary); color: var(--primary); }
+        .main-container { margin-left: 280px; width: calc(100% - 280px); overflow-y: auto; }
+        header {
+            background: rgba(15, 29, 49, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 217, 163, 0.1);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .header-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content { padding: 2rem; max-width: 1400px; }
+        .hero { text-align: center; padding: 3rem 2rem; margin-bottom: 3rem; }
+        .hero h1 {
+            font-size: 2.8em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+        .hero p { font-size: 1.1em; color: var(--text-muted); margin-bottom: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+        .btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 217, 163, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0, 217, 163, 0.5); }
+        .btn-secondary {
+            background: rgba(0, 168, 204, 0.2);
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+        .btn-secondary:hover { background: rgba(0, 168, 204, 0.3); transform: translateY(-2px); }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, rgba(0, 217, 163, 0.05), rgba(0, 168, 204, 0.05));
+            border: 1px solid rgba(0, 217, 163, 0.2);
+            padding: 2rem;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            border-color: rgba(0, 217, 163, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 217, 163, 0.1);
+        }
+        .feature-icon { font-size: 2.5em; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.3em; margin-bottom: 0.5rem; color: var(--primary); }
+        .feature-card p { color: var(--text-muted); line-height: 1.6; }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, rgba(0, 217, 163, 0.1), rgba(0, 168, 204, 0.1));
+            border: 1px solid rgba(0, 217, 163, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-number { font-size: 2em; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem; }
+        .stat-label { color: var(--text-muted); font-size: 0.9em; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 217, 163, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 217, 163, 0.5); }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 250px; }
+            .main-container { margin-left: 0; width: 100%; }
+            .hero h1 { font-size: 2em; }
+            .features-grid { grid-template-columns: 1fr; }
+        }
+        h2 { text-align: center; font-size: 1.8em; margin: 2rem 0; color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">🧪 TestGen</div>
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item active"><span>🏠</span><span>Home</span></a>
+            <a href="game.html" class="nav-item"><span>🎮</span><span>Play Challenge</span></a>
+            <a href="#features" class="nav-item"><span>✨</span><span>Features</span></a>
+            <a href="#about" class="nav-item"><span>ℹ️</span><span>About</span></a>
+            <a href="#" class="nav-item"><span>📚</span><span>Docs</span></a>
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <header>
+            <div class="header-title">🧪 TestGen - AI-Powered Mutation Testing</div>
+        </header>
+
+        <div class="content">
+            <section class="hero">
+                <h1>AI-Powered Mutation Testing Challenge</h1>
+                <p>Master the art of writing high-quality tests that catch real bugs. Score your tests based on mutation-killing power, not just coverage.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="game.html" class="btn btn-primary"><span>▶️</span><span>Start Playing</span></a>
+                    <button class="btn btn-secondary"><span>🚀</span><span>Learn More</span></button>
+                </div>
+            </section>
+
+            <h2 id="features">Why TestGen?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Scoring</h3>
+                    <p>Score tests by mutation kill rate, not just code coverage. Measure what really matters.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Generation</h3>
+                    <p>Let AI generate comprehensive test cases instantly. Powered by advanced models.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Feedback</h3>
+                    <p>See results in seconds. Understand which mutations your tests catch.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Progressive Difficulty</h3>
+                    <p>Advance from easy to hard. Track your improvement over time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Compete</h3>
+                    <p>Achieve high scores and build your testing expertise.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>Learn Best Practices</h3>
+                    <p>Discover effective testing strategies from AI-generated tests.</p>
+                </div>
+            </div>
+
+            <h2>How It Works</h2>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-number">1️⃣</div>
+                    <div class="stat-label">Load Function</div>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9em;">Get a function with description</p>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">2️⃣</div>
+                    <div class="stat-label">Write Tests</div>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9em;">Or generate with AI</p>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">3️⃣</div>
+                    <div class="stat-label">Submit</div>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9em;">Tests are validated</p>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">4️⃣</div>
+                    <div class="stat-label">Score</div>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9em;">Get mutation kill %</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; padding: 3rem 2rem; margin-top: 3rem; background: linear-gradient(135deg, rgba(0, 217, 163, 0.1), rgba(0, 168, 204, 0.1)); border-radius: 15px; border: 1px solid rgba(0, 217, 163, 0.2);">
+                <h2 style="margin: 0 0 1rem 0;">Ready to Level Up?</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Join thousands of developers improving their test writing abilities.</p>
+                <a href="game.html" class="btn btn-primary"><span>🎮</span><span>Play Now</span></a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

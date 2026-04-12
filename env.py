@@ -108,8 +108,13 @@ class TestGenEnv:
         else:
             logger.info(f"Test score: {score:.2f}")
         
-        # Load next function for next episode
-        next_obs = self.reset()
+        # Keep the current task active after evaluation.
+        # Users can explicitly request a new task via reset/load action.
+        next_obs = Observation(
+            function_code=self.current["code"],
+            docstring=self.current["doc"],
+            task_level=self.current["level"]
+        )
         
         return StepResult(
             observation=next_obs,

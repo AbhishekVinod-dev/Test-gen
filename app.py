@@ -21,6 +21,8 @@ from models import Action
 import os
 import logging
 import re
+import random
+import uuid
 
 # Configure logging
 logging.basicConfig(
@@ -165,8 +167,110 @@ def test_is_prime_false_cases():
 """,
     }
 
+    known_tests_alt = {
+        "add": """
+def test_add_identity_and_commutative_cases():
+    assert add(0, 9) == 9
+    assert add(4, 5) == add(5, 4)
+
+def test_add_negative_and_large_values():
+    assert add(-10, 3) == -7
+    assert add(1000, 2000) == 3000
+""",
+        "is_even": """
+def test_is_even_multiple_ranges():
+    assert is_even(10) is True
+    assert is_even(11) is False
+    assert is_even(-100) is True
+
+def test_is_even_boundary_like_values():
+    assert is_even(1) is False
+    assert is_even(-1) is False
+""",
+        "max_in_list": """
+def test_max_in_list_unsorted_and_duplicates():
+    assert max_in_list([3, 1, 2]) == 3
+    assert max_in_list([5, 5, 2]) == 5
+
+def test_max_in_list_negative_and_singleton():
+    assert max_in_list([-10, -2, -30]) == -2
+    assert max_in_list([42]) == 42
+""",
+        "factorial": """
+def test_factorial_progression_properties():
+    assert factorial(2) == 2
+    assert factorial(4) == 24
+
+def test_factorial_known_values():
+    assert factorial(6) == 720
+    assert factorial(1) == 1
+""",
+        "is_palindrome": """
+def test_is_palindrome_simple_and_mixed_case():
+    assert is_palindrome("racecar") is True
+    assert is_palindrome("RaceCar") is True
+
+def test_is_palindrome_non_palindromes():
+    assert is_palindrome("python") is False
+    assert is_palindrome("open ai") is False
+""",
+        "merge_sorted": """
+def test_merge_sorted_varied_lengths():
+    assert merge_sorted([1], [2, 3, 4]) == [1, 2, 3, 4]
+    assert merge_sorted([2, 4], [1, 3, 5]) == [1, 2, 3, 4, 5]
+
+def test_merge_sorted_both_empty_or_one_empty():
+    assert merge_sorted([], []) == []
+    assert merge_sorted([1, 2], []) == [1, 2]
+""",
+        "longest_substring": """
+def test_longest_substring_classic_examples():
+    assert longest_substring("dvdf") == 3
+    assert longest_substring("abba") == 2
+
+def test_longest_substring_short_inputs():
+    assert longest_substring("a") == 1
+    assert longest_substring("au") == 2
+""",
+        "binary_search": """
+def test_binary_search_middle_and_edges():
+    arr = [2, 4, 6, 8, 10]
+    assert binary_search(arr, 6) == 2
+    assert binary_search(arr, 2) == 0
+    assert binary_search(arr, 10) == 4
+
+def test_binary_search_absent_values():
+    arr = [2, 4, 6, 8, 10]
+    assert binary_search(arr, -1) == -1
+    assert binary_search(arr, 7) == -1
+""",
+        "fibonacci": """
+def test_fibonacci_sequence_points():
+    assert fibonacci(4) == 3
+    assert fibonacci(5) == 5
+    assert fibonacci(6) == 8
+
+def test_fibonacci_nontrivial_values():
+    assert fibonacci(8) == 21
+    assert fibonacci(12) == 144
+""",
+        "is_prime": """
+def test_is_prime_additional_true_cases():
+    assert is_prime(5) is True
+    assert is_prime(11) is True
+
+def test_is_prime_additional_false_cases():
+    assert is_prime(4) is False
+    assert is_prime(25) is False
+""",
+    }
+
     if func_name in known_tests:
-        return known_tests[func_name].strip()
+        candidates = [known_tests[func_name].strip()]
+        alt = known_tests_alt.get(func_name)
+        if alt:
+            candidates.append(alt.strip())
+        return random.choice(candidates)
 
     return f"""
 def test_{func_name}_smoke():
@@ -252,6 +356,7 @@ def generate_tests(request: TestGenerationRequest):
         else:
             client = OpenAI(api_key=api_key)
         
+        variation_seed = uuid.uuid4().hex[:10]
         prompt = f"""Generate comprehensive pytest test cases for this function:
 
 ```python
@@ -267,6 +372,7 @@ Requirements:
 4. Make tests that would catch common mutations (operator changes, operand removal, logic inversions)
 5. Include multiple assertions per test
 6. Make tests comprehensive to maximize mutation kill rate
+7. Produce a distinct variant from previous attempts using this seed: {variation_seed}
 
 Return ONLY the test code, no explanations or markdown.
 Start directly with 'def test_'"""
@@ -279,7 +385,7 @@ Start directly with 'def test_'"""
                 {"role": "user", "content": prompt},
             ],
             max_tokens=1500,
-            temperature=0.2,
+            temperature=float(os.getenv("TESTGEN_LLM_TEMPERATURE", "0.7")),
         )
 
         test_code = (response.choices[0].message.content or "").strip()

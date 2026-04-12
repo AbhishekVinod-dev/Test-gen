@@ -504,6 +504,11 @@
                 stats.avgScore = stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length;
                 updateStats();
                 displayResult(result);
+                // Backend advances to the next task after each evaluation; keep UI in sync.
+                if (result.observation) {
+                    currentTask = result.observation;
+                    displayTask(currentTask);
+                }
             } catch (error) {
                 showError('Error evaluating tests: ' + error.message);
             }
